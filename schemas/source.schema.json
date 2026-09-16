@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/0326/build-dev-whitepaper/main/schemas/source.schema.json",
+  "title": "Developer whitepaper source",
+  "description": "A first-party or explicitly allowed source registered by a whitepaper manifest.",
+  "type": "object",
+  "required": ["id", "kind", "official"],
+  "properties": {
+    "id": { "$ref": "#/$defs/id" },
+    "kind": { "enum": ["git", "web", "file"] },
+    "official": { "type": "boolean" },
+    "title": { "$ref": "#/$defs/nonEmpty" },
+    "repository": { "$ref": "#/$defs/httpUrl" },
+    "url": { "$ref": "#/$defs/httpUrl" },
+    "path": { "$ref": "#/$defs/relativePath" },
+    "accessed": { "type": "string", "minLength": 10 },
+    "scope": { "type": "string" },
+    "description": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "git" } } },
+      "then": { "required": ["repository"] }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "web" } } },
+      "then": { "required": ["url", "accessed"] }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "file" } } },
+      "then": { "required": ["path"] }
+    }
+  ],
+  "patternProperties": {
+    "^x-": {}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "maxLength": 120
+    },
+    "nonEmpty": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "httpUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://[^\\s]+$"
+    },
+    "relativePath": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)(?![A-Za-z]:)[^\\u0000]+$"
+    }
+  }
+}

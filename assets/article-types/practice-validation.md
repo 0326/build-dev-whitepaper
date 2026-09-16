@@ -1,10 +1,16 @@
 ---
+schema_version: 1
 title: "实践验证"
+kind: "article"
 id: "practice-validation"
+slug: "stable-article-slug"
+file: "docs/path/article.md"
 type: "practice-validation"
 version: "项目的具体版本"
+audience: []
+normative_level: "explanatory"
 verification: "draft"
-sources: []
+evidence: []
 ---
 
 # 实践验证
@@ -56,3 +62,4 @@ sources: []
 ## 环境限制与继续阅读
 
 说明未验证的环境、已知限制、清理和回退动作，并链接机制解释、Reference 和固定版本官方来源。
+

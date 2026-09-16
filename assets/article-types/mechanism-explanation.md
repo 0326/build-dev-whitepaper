@@ -1,10 +1,16 @@
 ---
+schema_version: 1
 title: "机制解释"
+kind: "article"
 id: "mechanism-explanation"
+slug: "stable-article-slug"
+file: "docs/path/article.md"
 type: "mechanism-explanation"
 version: "项目的具体版本"
+audience: []
+normative_level: "explanatory"
 verification: "draft"
-sources: []
+evidence: []
 ---
 
 # 机制解释
@@ -58,3 +64,4 @@ sources: []
 ## 继续阅读与来源
 
 链接前置文章、下一篇文章、Reference 和固定版本的官方文件或符号。
+

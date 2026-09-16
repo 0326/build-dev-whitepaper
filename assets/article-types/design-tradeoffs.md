@@ -1,10 +1,16 @@
 ---
+schema_version: 1
 title: "设计取舍"
+kind: "article"
 id: "design-tradeoffs"
+slug: "stable-article-slug"
+file: "docs/path/article.md"
 type: "design-tradeoffs"
 version: "项目的具体版本"
+audience: []
+normative_level: "explanatory"
 verification: "draft"
-sources: []
+evidence: []
 ---
 
 # 设计取舍
@@ -45,3 +51,4 @@ sources: []
 ## 证据与继续阅读
 
 列出与每个关键判断对应的官方文件、接口、测试或发布记录，并链接实现与验证文章。
+

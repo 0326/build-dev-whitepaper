@@ -28,16 +28,22 @@
 创建正文前，先填写：
 
 ~~~yaml
+schema_version: 1
+kind: article
 id: stable-topic-id
 type: mechanism-explanation
+audience: []
+normative_level: explanatory
 primary_question: "读者最需要回答的一个问题"
 reader_outcome: "读完后能作出的判断或完成的动作"
 prerequisites: []
 evidence: []
 boundaries: []
+slug: stable-topic-slug
+file: docs/path/article.md
 ~~~
 
-primary_question 只写一个问题。reader_outcome 必须能被读者测试验证，不能写成“了解系统”这类无法观察的结果。
+primary_question 只写一个问题。reader_outcome 必须能映射到自动化评测的可观察 expectation，不能写成“了解系统”这类无法复核的结果。
 
 ## 完稿自检
 
@@ -48,3 +54,4 @@ primary_question 只写一个问题。reader_outcome 必须能被读者测试验
 - 选择页保留比较维度，机制细节放在对应独立文章。
 - 示例包含版本、前置条件、输入和可观察结果。
 - 文章末尾提供下一步和固定版本的官方入口。
+

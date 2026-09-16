@@ -1,16 +1,27 @@
 ---
+schema_version: 1
 title: "用主问题或核心机制命名"
 id: "stable-article-id"
 version: "项目的具体版本"
+kind: "article"
 type: "mechanism-explanation"
+audience: ["主要读者"]
+normative_level: "explanatory"
 verification: "draft"
-sources: []
+slug: "stable-article-slug"
+file: "docs/path/article.md"
+prerequisites: []
+next_articles: []
+boundaries: []
+claim_ids: []
+evidence: []
+diagrams: []
 ---
 # 文章标题
 
 直接说明本篇解释什么、适用版本，以及读者读完能够作出什么判断。先阅读 [文章分型模板](article-types/README.md)，填写主类型、主问题和读者结果；如果正文主要承担选择、机制、取舍、实践或迁移中的一种任务，使用对应类型模板。
 
-> 这是可调整的起草骨架，元数据映射到项目既有 schema；补齐证据后才改变核验状态。不要把模板文本当成最终正文。
+> 这是可调整的起草骨架，元数据映射到项目既有 schema；补齐 evidence 与 claims 后才改变核验状态。不要把模板文本当成最终正文。
 
 ## 问题与前提
 
@@ -35,4 +46,5 @@ sources: []
 ## 继续阅读与官方入口
 
 链接前置 / 下一篇、相关速查和固定版本的官方文件或符号。来源索引可由元数据生成，避免手工重复维护。
+
 

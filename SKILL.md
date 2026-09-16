@@ -20,6 +20,8 @@ description: "为软件、框架、协议和开发平台创建、评审、改版
 
 用 [项目简报模板](assets/project-brief.md) 记录项目、读者任务、技术基线、资料范围、章节范围、版本策略和验收方式。已有等价资料就补缺，不重复建档。
 
+凡涉及站点导航、版本切换或长期维护的项目，建立 canonical manifest（见 [Manifest 与 Schema](references/manifest.md)）作为项目级元数据唯一事实源；一次性小型草稿可以只使用文章卡，不必为了使用模板强行建站。
+
 区分：
 - **通用原则**：事实可追溯、单篇有清晰问题、版本一致、边界可辨、验证结果如实记录。
 - **项目设置**：分组数量、版本通道、目录位置、框架、字体、语言、导出格式。没有依据时不照搬 DSH 的五组、RC 或特定路由。
@@ -29,7 +31,7 @@ description: "为软件、框架、协议和开发平台创建、评审、改版
 
 阅读 [证据与版本规范](references/evidence-and-versions.md)。先锁定资料基线：有 tag 时解析到 commit，未发版时使用明确 commit；非源码资料记录适用版本与访问时间。再阅读 README、架构设计、公开接口、入口调用链、测试和 Release 差异。
 
-列出读者必须弄清的技术问题，形成“结论 → 版本 → 官方文件 / 符号 / 测试 → 限制”的证据记录。文件出现在 sources 中不等于它支持整篇结论。将事实、工程建议、推断和未知分开标注；资料冲突或不可访问时收敛结论，不编造核验结果。
+列出读者必须弄清的技术问题，形成“结论 → 版本 → 官方文件 / 符号 / 测试 → 限制”的证据记录。Manifest 顶层 `sources` 只登记来源身份，版本内 `source_locks` 固定基线，文章 `evidence` 用稳定 ID 和 `source_id` 做就近引用；文件出现在来源注册中不等于它支持整篇结论。将事实、工程建议、推断和未知分开标注；资料冲突或不可访问时收敛结论，不编造核验结果。
 
 需要对标时选能补足当前缺口的开源文档，实际读取后比较“阅读入口、机制解释、取舍、证据、维护方式”。外部项目可启发组织方式，不能成为目标项目能力的事实来源。输出保留、改进和不采用的具体理由。
 
@@ -61,20 +63,31 @@ description: "为软件、框架、协议和开发平台创建、评审、改版
 
 站点实现或版本维护任务再读 [工程与维护](references/engineering.md)。从同一份受维护元数据生成导航、前后篇、来源链接、搜索 / sitemap 等投影，避免第二份手工注册表。
 
+需要长期维护时，先运行 `python3 <skill-dir>/scripts/validate_manifest.py <manifest> --root <repo-root>`，再运行固定来源审计；不要让站点注册表、文章 frontmatter 和临时审计 JSON 各自演化成不同 schema。
+
 AI 负责阅读、解释、论证和迁移分析；脚本 / CI 负责筛选版本、收集差异、构建、链接与资产校验。已有自动化优先复用。检测到上游新版不代表新版白皮书已经发布。
 
 允许对旧快照纠错，但保持来源基线不变，增加文档修订记录；不能把新版行为倒灌成旧版事实。
 
 ## 6. 验收和交付
 
-按 [质量验收](references/review.md) 做内容与工程两次检查。机制、选择、失败和证据问题还要按 [独立读者测试](references/reader-testing.md) 运行快照测试；读者测试未运行时保持未核验状态，不能仅凭作者自审将文章标为 reviewed。先交付结果，再报告验证通过、失败、跳过和未执行项；目录齐全、链接存在或 CI 绿色均不能单独证明文章正确。
+先校验 canonical manifest 的字段、版本、来源锁、导航、文章和附件交叉引用：
 
-需要对 Git 来源的文档快照做结构校验时，参考 [工程与维护](references/engineering.md) 导出临时审计 JSON，再运行：
+~~~bash
+python3 <skill-dir>/scripts/validate_manifest.py <manifest> --root <repo-root>
+~~~
+
+按 [质量验收](references/review.md) 做内容与工程两次检查，再运行固定来源审计和自动化评测 runner。先交付结果，再报告验证通过、失败、跳过和未执行项；目录齐全、链接存在或 CI 绿色均不能单独证明文章事实正确。
+
+需要对 Git 来源的文档快照做结构校验时，优先直接审计 canonical manifest；只有现有项目尚未迁移时才导出临时单版本 JSON。参考 [工程与维护](references/engineering.md) 后运行：
 
 ```bash
+python3 <skill-dir>/scripts/audit_snapshot.py <manifest.json> --root <repo-root> --version <version>
+# 兼容旧版单版本审计输入
 python3 <skill-dir>/scripts/audit_snapshot.py <audit.json>
 # 有固定版本的本地官方源码时，增加证据路径核验
-python3 <skill-dir>/scripts/audit_snapshot.py <audit.json> --upstream core=/path/to/official-checkout
+python3 <skill-dir>/scripts/audit_snapshot.py <manifest.json> --root <repo-root> --version <version> \
+  --upstream core=/path/to/official-checkout
 ```
 
 工具只读、不联网，检查导航唯一性、文章 / 图资产、声明的版本策略和固定 commit 下的来源路径。它不核验文字含义、页面渲染或网络链接，不能据其通过把文章自动标为 reviewed。
@@ -83,11 +96,25 @@ DSH 复盘或从现有 DSH 白皮书迁移时才读 [DSH 示例](references/dsh-
 
 ## 7. 方法自测
 
-仓库附带 [最小评测集](evals/evals.json)，覆盖小型项目、多版本迁移、机制解释、来源冲突、文章去重和近似误触发。先运行结构校验：
+仓库附带 [最小评测集](evals/evals.json)，覆盖小型项目、多版本迁移、机制解释、来源冲突、文章去重和近似误触发。先运行 manifest 与评测的结构校验：
+
+~~~bash
+python3 <skill-dir>/scripts/validate_manifest.py <manifest>
+~~~
+
+然后运行：
 
 ~~~bash
 python3 <skill-dir>/scripts/validate_evals.py
 ~~~
 
-结构校验只证明评测文件可读；要比较 Skill 版本，使用同一模型、提示词、输入资料和评分规则，分别运行 with_skill 与 without_skill，并记录通过率、失败证据、耗时和 Token。文章准确性、因果和读者理解仍需来源核验与独立读者测试。
+结构校验只证明评测文件可读。要比较 Skill 版本，使用同一模型、提示词、输入资料和评分规则，分别运行 with_skill 与 without_skill，并记录通过率、失败证据、耗时和 Token。把自动化 harness 生成的结构化 run 交给 scorecard runner：
+
+~~~bash
+python3 <skill-dir>/scripts/run_evals.py <run.json> \
+  --cases <skill-dir>/evals/evals.json \
+  --json-out <scorecard.json>
+~~~
+
+run JSON 的字段和证据要求见 [eval-run.schema.json](schemas/eval-run.schema.json)。runner 只汇总已记录的逐项自动化判断，不从正文关键词推断质量，也不替代官方来源核验。基线变体可以设置 `gates: false`，候选变体应设置 `gates: true`，避免比较基线的已知失败阻塞候选版本门禁。
 

@@ -1,12 +1,19 @@
 ---
+schema_version: 1
+kind: "article"
+audience: ["engineer"]
+normative_level: "explanatory"
+slug: "raft-understandability"
+file: "examples/raft-understandability.md"
 title: "标杆样稿：Raft 如何把共识问题拆成可理解的机制"
 id: "benchmark-raft-understandability"
 type: "mechanism-explanation"
 version: "Raft paper, 2014"
-verification: "reviewed"
+verification: "draft"
 authority: "upstream"
-sources:
+evidence:
   - id: "raft-paper"
+    source_id: "raft-paper"
     url: "https://raft.github.io/raft.pdf"
     scope: "Abstract; Sections 3 and 5; Section 9.1"
     accessed: "2026-09-16"
@@ -86,3 +93,4 @@ Raft 的可理解性来自两个相互配合的选择：
 如果要描述某个 Raft 实现的 RPC、超时、持久化或成员变更 API，需要为该实现重新建立来源锁和证据记录。
 
 官方来源：[Raft paper](https://raft.github.io/raft.pdf)。
+

@@ -6,7 +6,11 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 from typing import Any
+
+
+ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]*$")
 
 
 def add(errors: list[str], location: str, message: str) -> None:
@@ -15,6 +19,10 @@ def add(errors: list[str], location: str, message: str) -> None:
 
 def nonempty_string(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip()) and chr(0) not in value
+
+
+def stable_id(value: Any) -> bool:
+    return isinstance(value, str) and len(value) <= 120 and bool(ID_RE.fullmatch(value))
 
 
 def validate(data: Any) -> list[str]:
@@ -28,15 +36,17 @@ def validate(data: Any) -> list[str]:
         add(errors, "evals", "must be a non-empty array")
         return errors
 
-    ids: list[int] = []
+    ids: list[str] = []
     for index, item in enumerate(evals):
         location = f"evals[{index}]"
         if not isinstance(item, dict):
             add(errors, location, "expected an object")
             continue
         eval_id = item.get("id")
-        if type(eval_id) is not int or eval_id < 1:
-            add(errors, f"{location}.id", "must be a positive integer")
+        if type(eval_id) is int and eval_id >= 1:
+            ids.append(str(eval_id))
+        elif not stable_id(eval_id):
+            add(errors, f"{location}.id", "must be a positive integer or stable ID")
         else:
             ids.append(eval_id)
         for field in ("prompt", "expected_output"):
@@ -61,12 +71,24 @@ def validate(data: Any) -> list[str]:
             seen: set[str] = set()
             for expectation_index, expectation in enumerate(expectations):
                 expectation_location = f"{location}.expectations[{expectation_index}]"
-                if not nonempty_string(expectation):
-                    add(errors, expectation_location, "must be a non-empty string")
-                elif expectation in seen:
-                    add(errors, expectation_location, "duplicate expectation")
+                if isinstance(expectation, str):
+                    expectation_id = None
+                    expectation_text = expectation
+                elif isinstance(expectation, dict):
+                    expectation_id = expectation.get("id")
+                    expectation_text = expectation.get("text", expectation.get("expectation"))
+                    if not stable_id(expectation_id):
+                        add(errors, f"{expectation_location}.id", "must be a stable ID")
                 else:
-                    seen.add(expectation)
+                    expectation_id = None
+                    expectation_text = None
+                if not nonempty_string(expectation_text):
+                    add(errors, f"{expectation_location}.text", "must be a non-empty string")
+                duplicate_key = expectation_id or expectation_text
+                if duplicate_key in seen:
+                    add(errors, expectation_location, "duplicate expectation")
+                elif duplicate_key is not None:
+                    seen.add(duplicate_key)
     if len(ids) != len(set(ids)):
         add(errors, "evals.id", "IDs must be unique")
     return errors
@@ -99,3 +121,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

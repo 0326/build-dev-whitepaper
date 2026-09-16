@@ -1,0 +1,216 @@
+{
+  "$schema": "../schemas/whitepaper.schema.json",
+  "schema_version": 1,
+  "project": {
+    "id": "example-whitepaper",
+    "name": "Example Developer Whitepaper",
+    "repository": "https://github.com/example/project",
+    "description": "A small manifest that demonstrates the canonical model without describing a real product."
+  },
+  "policy": {
+    "allowed_release_channels": ["stable", "rc"],
+    "included_release_channels": ["stable"],
+    "default_version": "v1.0.0",
+    "version_fallback": "explicit-only",
+    "required_appendices": ["glossary", "conventions", "source-index"]
+  },
+  "sources": [
+    {
+      "id": "raft-paper",
+      "kind": "web",
+      "official": true,
+      "title": "In Search of an Understandable Consensus Algorithm",
+      "url": "https://raft.github.io/raft.pdf",
+      "accessed": "2026-09-16",
+      "scope": "Abstract; Sections 3, 5 and 9.1"
+    },
+    {
+      "id": "sqlite-atomic-commit",
+      "kind": "web",
+      "official": true,
+      "title": "Atomic Commit In SQLite",
+      "url": "https://www.sqlite.org/atomiccommit.html",
+      "accessed": "2026-09-16",
+      "scope": "Rollback-mode commit and crash-test sections"
+    }
+  ],
+  "versions": [
+    {
+      "id": "v1.0.0",
+      "label": "v1.0.0",
+      "release_channel": "stable",
+      "publication_state": "draft",
+      "documentation_revision": 1,
+      "content_root": "examples",
+      "asset_root": "assets",
+      "source_locks": [
+        {
+          "source_id": "raft-paper",
+          "accessed": "2026-09-16",
+          "scope": "Abstract; Sections 3, 5 and 9.1"
+        },
+        {
+          "source_id": "sqlite-atomic-commit",
+          "accessed": "2026-09-16",
+          "scope": "Rollback-mode commit and crash-test sections"
+        }
+      ],
+      "groups": [
+        {
+          "id": "mechanisms",
+          "title": "机制解释",
+          "kind": "body",
+          "order": 10,
+          "articles": [
+            "benchmark-raft-understandability",
+            "benchmark-sqlite-atomic-commit"
+          ]
+        },
+        {
+          "id": "appendices",
+          "title": "附录",
+          "kind": "appendix",
+          "order": 100,
+          "articles": ["glossary", "conventions", "source-index"]
+        }
+      ],
+      "articles": [
+        {
+          "schema_version": 1,
+          "id": "benchmark-raft-understandability",
+          "title": "标杆样稿：Raft 如何把共识问题拆成可理解的机制",
+          "version": "v1.0.0",
+          "kind": "article",
+          "type": "mechanism-explanation",
+          "audience": ["engineer"],
+          "normative_level": "explanatory",
+          "authority": "upstream",
+          "verification": "draft",
+          "slug": "raft-understandability",
+          "file": "raft-understandability.md",
+          "diagrams": [],
+          "prerequisites": [],
+          "next_articles": ["benchmark-sqlite-atomic-commit"],
+          "boundaries": ["Only the 2014 Raft paper model is covered."],
+          "claim_ids": ["raft-decomposition"],
+          "evidence": [
+            {
+              "id": "raft-paper-algorithm",
+              "source_id": "raft-paper",
+              "locator": "Abstract; Sections 3 and 5",
+              "claim_ids": ["raft-decomposition"]
+            }
+          ]
+        },
+        {
+          "schema_version": 1,
+          "id": "benchmark-sqlite-atomic-commit",
+          "title": "标杆样稿：SQLite 回滚模式如何实现原子提交",
+          "version": "v1.0.0",
+          "kind": "article",
+          "type": "mechanism-explanation",
+          "audience": ["engineer"],
+          "normative_level": "explanatory",
+          "authority": "upstream",
+          "verification": "draft",
+          "slug": "sqlite-atomic-commit",
+          "file": "sqlite-atomic-commit.md",
+          "diagrams": [],
+          "prerequisites": [],
+          "next_articles": [],
+          "boundaries": ["Only the official rollback-mode article is covered."],
+          "claim_ids": ["sqlite-rollback-atomicity"],
+          "evidence": [
+            {
+              "id": "sqlite-atomic-process",
+              "source_id": "sqlite-atomic-commit",
+              "locator": "Sections 1–4 and 8–9",
+              "claim_ids": ["sqlite-rollback-atomicity"]
+            }
+          ]
+        },
+        {
+          "schema_version": 1,
+          "id": "glossary",
+          "title": "示例术语表",
+          "version": "v1.0.0",
+          "kind": "appendix",
+          "type": "glossary",
+          "audience": ["all"],
+          "normative_level": "editorial",
+          "authority": "document-policy",
+          "verification": "draft",
+          "slug": "glossary",
+          "file": "manifest-fixtures/glossary.md",
+          "diagrams": [],
+          "prerequisites": [],
+          "next_articles": [],
+          "boundaries": [],
+          "claim_ids": [],
+          "evidence": []
+        },
+        {
+          "schema_version": 1,
+          "id": "conventions",
+          "title": "示例阅读与规范约定",
+          "version": "v1.0.0",
+          "kind": "appendix",
+          "type": "conventions",
+          "audience": ["all"],
+          "normative_level": "editorial",
+          "authority": "document-policy",
+          "verification": "draft",
+          "slug": "conventions",
+          "file": "manifest-fixtures/conventions.md",
+          "diagrams": [],
+          "prerequisites": [],
+          "next_articles": [],
+          "boundaries": [],
+          "claim_ids": [],
+          "evidence": []
+        },
+        {
+          "schema_version": 1,
+          "id": "source-index",
+          "title": "示例官方来源索引",
+          "version": "v1.0.0",
+          "kind": "appendix",
+          "type": "source-index",
+          "audience": ["all"],
+          "normative_level": "editorial",
+          "authority": "document-policy",
+          "verification": "draft",
+          "slug": "source-index",
+          "file": "manifest-fixtures/source-index.md",
+          "diagrams": [],
+          "prerequisites": [],
+          "next_articles": [],
+          "boundaries": [],
+          "claim_ids": [],
+          "evidence": []
+        }
+      ],
+      "claims": [
+        {
+          "id": "raft-decomposition",
+          "article_id": "benchmark-raft-understandability",
+          "kind": "fact",
+          "text": "The paper presents leader election, log replication and safety as separable parts of the Raft model.",
+          "status": "verified",
+          "evidence_ids": ["raft-paper-algorithm"],
+          "limitations": ["This is a claim about the cited paper, not every Raft implementation."]
+        },
+        {
+          "id": "sqlite-rollback-atomicity",
+          "article_id": "benchmark-sqlite-atomic-commit",
+          "kind": "fact",
+          "text": "The official article explains rollback-mode atomicity through the rollback journal, write ordering and recovery after interruption.",
+          "status": "verified",
+          "evidence_ids": ["sqlite-atomic-process"],
+          "limitations": ["The cited article does not by itself establish behavior for every SQLite mode or storage stack."]
+        }
+      ]
+    }
+  ]
+}
+

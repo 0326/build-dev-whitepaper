@@ -1,12 +1,19 @@
 ---
+schema_version: 1
+kind: "article"
+audience: ["engineer"]
+normative_level: "explanatory"
+slug: "sqlite-atomic-commit"
+file: "examples/sqlite-atomic-commit.md"
 title: "标杆样稿：SQLite 回滚模式如何实现原子提交"
 id: "benchmark-sqlite-atomic-commit"
 type: "mechanism-explanation"
 version: "official atomic commit document"
-verification: "reviewed"
+verification: "draft"
 authority: "upstream"
-sources:
+evidence:
   - id: "sqlite-atomic-commit"
+    source_id: "sqlite-atomic-commit"
     url: "https://www.sqlite.org/atomiccommit.html"
     scope: "Sections 1–4 and 8–9"
     accessed: "2026-09-16"
@@ -75,3 +82,4 @@ SQLite 官方文章说明，其崩溃测试使用修改过的 VFS 模拟电源�
 如果要给出具体 SQLite 版本的默认模式、性能数据或 VFS 行为，需要锁定该版本源码、发布说明和对应测试。
 
 官方来源：[SQLite Atomic Commit](https://www.sqlite.org/atomiccommit.html)。
+
