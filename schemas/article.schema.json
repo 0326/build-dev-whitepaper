@@ -111,15 +111,21 @@
         },
         "notes": { "type": "string" }
       },
-      "anyOf": [
-        { "required": ["source_id"] },
-        { "required": ["url"] }
-      ],
-      "anyOf": [
-        { "required": ["path"] },
-        { "required": ["locator"] },
-        { "required": ["symbol"] },
-        { "required": ["url"] }
+      "allOf": [
+        {
+          "anyOf": [
+            { "required": ["source_id"] },
+            { "required": ["url"] }
+          ]
+        },
+        {
+          "anyOf": [
+            { "required": ["path"] },
+            { "required": ["locator"] },
+            { "required": ["symbol"] },
+            { "required": ["url"] }
+          ]
+        }
       ],
       "patternProperties": {
         "^x-": {}
@@ -143,3 +149,4 @@
     }
   }
 }
+
