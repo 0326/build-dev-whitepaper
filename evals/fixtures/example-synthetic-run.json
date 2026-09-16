@@ -4,7 +4,7 @@
   "created_at": "2026-09-16T00:00:00Z",
   "catalog": {
     "path": "evals/evals.json",
-    "sha256": "ea6e776fe67d0fd624771ccbc967afc6a42f6fba9e67f17a28dda1576b445e2e"
+    "sha256": "4e229b7678ebe0a3b0e6247711a1622ee05f3dd59c52d9f4181a75c91531fec5"
   },
   "model": "example-harness",
   "notes": "格式示例，不代表真实质量结论。",
