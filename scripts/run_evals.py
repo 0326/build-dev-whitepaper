@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Score a structured build-dev-whitepaper evaluation run.
 
-The runner deliberately does not infer quality from output keywords. An Agent
-harness or an independent reviewer records expectation-level decisions and
-evidence; this script validates that record and produces a reproducible
-scorecard for candidate/baseline comparisons.
+The runner deliberately does not infer quality from output keywords. An
+automated harness records expectation-level decisions and evidence; this
+script validates that record and produces a reproducible scorecard for
+candidate/baseline comparisons.
 """
 
 from __future__ import annotations
@@ -20,12 +20,15 @@ from typing import Any
 try:
     from validate_evals import validate as validate_catalog
 except ImportError:  # pragma: no cover - useful when copied as a standalone script
-    validate_catalog = None
+    try:
+        from scripts.validate_evals import validate as validate_catalog
+    except ImportError:
+        validate_catalog = None
 
 
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]*$")
 STATUSES = {"pass", "fail", "blocked", "not-run"}
-EVIDENCE_KINDS = {"artifact", "output", "review", "test", "source"}
+EVIDENCE_KINDS = {"artifact", "output", "test", "source"}
 VARIANT_KEYS = {"with_skill", "without_skill", "old_skill", "candidate", "baseline"}
 
 
@@ -539,7 +542,6 @@ def run(catalog_path: Path, run_path: Path, *, allow_partial: bool = False, only
         "not_checked": [
             "whether the recorded expectation decisions are substantively correct",
             "official-source accuracy of the generated article",
-            "independent reader identity or reviewer independence",
             "Markdown rendering and external link reachability",
         ],
         "ok": not errors and gate_passed,

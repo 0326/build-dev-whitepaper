@@ -5,8 +5,6 @@ audience: ["engineer"]
 normative_level: "explanatory"
 slug: "raft-understandability"
 file: "examples/raft-understandability.md"
-reader_test:
-  status: "unrun"
 title: "标杆样稿：Raft 如何把共识问题拆成可理解的机制"
 id: "benchmark-raft-understandability"
 type: "mechanism-explanation"

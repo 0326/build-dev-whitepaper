@@ -34,7 +34,6 @@
     },
     "verification": { "enum": ["draft", "reviewed", "blocked"] },
     "authority": { "enum": ["upstream", "document-policy"] },
-    "reader_test": { "$ref": "#/$defs/readerTest" },
     "slug": { "$ref": "#/$defs/relativePath" },
     "file": { "$ref": "#/$defs/relativePath" },
     "diagrams": {
@@ -131,22 +130,8 @@
         "^x-": {}
       },
       "additionalProperties": false
-    },
-    "readerTest": {
-      "type": "object",
-      "required": ["status"],
-      "properties": {
-        "status": { "enum": ["unrun", "passed", "failed", "not-applicable"] },
-        "tested_at": { "type": "string", "minLength": 10 },
-        "snapshot": { "$ref": "#/$defs/relativePath" },
-        "result_file": { "$ref": "#/$defs/relativePath" },
-        "notes": { "type": "string" }
-      },
-      "patternProperties": {
-        "^x-": {}
-      },
-      "additionalProperties": false
     }
   }
 }
+
 

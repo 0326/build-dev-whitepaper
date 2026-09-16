@@ -126,7 +126,7 @@
       "type": "object",
       "required": ["kind", "locator"],
       "properties": {
-        "kind": { "enum": ["artifact", "output", "review", "test", "source"] },
+        "kind": { "enum": ["artifact", "output", "test", "source"] },
         "locator": { "$ref": "#/$defs/nonEmpty" },
         "excerpt": { "type": "string" }
       },

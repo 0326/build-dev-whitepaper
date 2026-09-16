@@ -5,8 +5,6 @@ audience: ["engineer"]
 normative_level: "explanatory"
 slug: "sqlite-atomic-commit"
 file: "examples/sqlite-atomic-commit.md"
-reader_test:
-  status: "unrun"
 title: "标杆样稿：SQLite 回滚模式如何实现原子提交"
 id: "benchmark-sqlite-atomic-commit"
 type: "mechanism-explanation"

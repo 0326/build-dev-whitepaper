@@ -8,8 +8,6 @@ type: "mechanism-explanation"
 audience: ["主要读者"]
 normative_level: "explanatory"
 verification: "draft"
-reader_test:
-  status: "unrun"
 slug: "stable-article-slug"
 file: "docs/path/article.md"
 prerequisites: []

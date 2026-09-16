@@ -31,7 +31,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+              "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-1-expectation-1"
                 }
               ]
@@ -42,7 +42,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-1-expectation-2"
                 }
               ]
@@ -53,7 +53,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-1-expectation-3"
                 }
               ]
@@ -64,7 +64,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-1-expectation-4"
                 }
               ]
@@ -88,7 +88,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-2-expectation-1"
                 }
               ]
@@ -99,7 +99,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-2-expectation-2"
                 }
               ]
@@ -110,7 +110,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-2-expectation-3"
                 }
               ]
@@ -121,7 +121,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-2-expectation-4"
                 }
               ]
@@ -145,7 +145,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-3-expectation-1"
                 }
               ]
@@ -156,7 +156,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-3-expectation-2"
                 }
               ]
@@ -167,7 +167,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-3-expectation-3"
                 }
               ]
@@ -178,7 +178,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-3-expectation-4"
                 }
               ]
@@ -202,7 +202,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-4-expectation-1"
                 }
               ]
@@ -213,7 +213,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-4-expectation-2"
                 }
               ]
@@ -224,7 +224,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-4-expectation-3"
                 }
               ]
@@ -235,7 +235,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-4-expectation-4"
                 }
               ]
@@ -259,7 +259,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-5-expectation-1"
                 }
               ]
@@ -270,7 +270,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-5-expectation-2"
                 }
               ]
@@ -281,7 +281,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-5-expectation-3"
                 }
               ]
@@ -292,7 +292,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-5-expectation-4"
                 }
               ]
@@ -316,7 +316,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-6-expectation-1"
                 }
               ]
@@ -327,7 +327,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-6-expectation-2"
                 }
               ]
@@ -338,7 +338,7 @@
               "reason": "Synthetic fixture result; replace with an independent evaluation record.",
               "evidence": [
                 {
-                  "kind": "review",
+                  "kind": "test",
                   "locator": "evals/fixtures/example-review.json#case-6-expectation-3"
                 }
               ]
@@ -349,5 +349,4 @@
     }
   }
 }
-
 

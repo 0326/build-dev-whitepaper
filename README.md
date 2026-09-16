@@ -21,7 +21,7 @@ $build-dev-whitepaper
 请为这个项目创建或升级开发者白皮书，先核验官方资料，再设计文章分组、独立文章、术语表、规范附件和版本维护方案。
 ```
 
-核心说明见 [SKILL.md](SKILL.md)。第一轮质量基线包括文章分型、标杆样稿、独立读者测试和最小评测集；从 [evals/README.md](evals/README.md) 开始运行。
+核心说明见 [SKILL.md](SKILL.md)。第一轮质量基线包括文章分型、标杆样稿、自动化评测和最小评测集；从 [evals/README.md](evals/README.md) 开始运行。
 
 结构校验：
 
@@ -53,7 +53,6 @@ python3 scripts/validate_manifest.py manifests/example.whitepaper.json --root .
 - `assets/article.md`：通用独立文章模板
 - `assets/article-types/`：五种文章类型模板与选择规则
 - `examples/`：Raft 与 SQLite 的机制解释标杆样稿
-- `references/reader-testing.md`：无作者上下文的独立读者测试协议
 - `evals/evals.json`：第一轮最小评测集
 - `evals/fixtures/example-synthetic-run.json`：评测 run 数据格式示例（非质量结论）
 - `scripts/audit_snapshot.py`：只读的快照结构审计工具
@@ -74,5 +73,4 @@ DSH 的五组正文、RC + 稳定版策略、具体站点框架和路由只是�
 ## License
 
 MIT
-
 

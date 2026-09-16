@@ -86,7 +86,6 @@
           "normative_level": "explanatory",
           "authority": "upstream",
           "verification": "draft",
-          "reader_test": {"status": "unrun"},
           "slug": "raft-understandability",
           "file": "raft-understandability.md",
           "diagrams": [],
@@ -114,7 +113,6 @@
           "normative_level": "explanatory",
           "authority": "upstream",
           "verification": "draft",
-          "reader_test": {"status": "unrun"},
           "slug": "sqlite-atomic-commit",
           "file": "sqlite-atomic-commit.md",
           "diagrams": [],
@@ -215,3 +213,4 @@
     }
   ]
 }
+

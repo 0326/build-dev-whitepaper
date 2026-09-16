@@ -1,0 +1,40 @@
+name: quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile scripts and tests
+        run: python -m py_compile scripts/*.py tests/*.py
+
+      - name: Validate evaluation catalog
+        run: python scripts/validate_evals.py
+
+      - name: Validate canonical manifest
+        run: python scripts/validate_manifest.py manifests/example.whitepaper.json --root .
+
+      - name: Audit canonical snapshot
+        run: python scripts/audit_snapshot.py manifests/example.whitepaper.json --root . --version v1.0.0
+
+      - name: Run evaluation scorecard
+        run: python scripts/run_evals.py evals/fixtures/example-synthetic-run.json --cases evals/evals.json
+
+      - name: Run regression tests
+        run: python -m unittest discover -s tests -p "test_*.py"
+

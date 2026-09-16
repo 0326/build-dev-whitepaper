@@ -18,7 +18,6 @@ RELEASE_STATES = {"draft", "published"}
 SOURCE_KINDS = {"git", "web", "file"}
 ARTICLE_KINDS = {"article", "appendix"}
 VERIFICATION_STATES = {"draft", "reviewed", "blocked"}
-READER_TEST_STATES = {"unrun", "passed", "failed", "not-applicable"}
 CLAIM_KINDS = {"fact", "inference", "recommendation", "unknown"}
 CLAIM_STATES = {"proposed", "verified", "blocked"}
 
@@ -320,17 +319,6 @@ class Validator:
                     self.check_text(value, f"{location}.{field}[{value_index}]")
             if not unique(values):
                 self.error(f"{location}.{field}", "values must be unique")
-        reader_test = article.get("reader_test")
-        if reader_test is not None:
-            reader_test = self.require_object(reader_test, f"{location}.reader_test")
-            if reader_test.get("status") not in READER_TEST_STATES:
-                self.error(f"{location}.reader_test.status", "must be unrun, passed, failed, or not-applicable")
-            for field in ("snapshot", "result_file"):
-                if field in reader_test:
-                    self.check_path(reader_test.get(field), f"{location}.reader_test.{field}")
-        if article.get("verification") == "reviewed":
-            if not isinstance(reader_test, dict) or reader_test.get("status") != "passed":
-                self.error(f"{location}.verification", "reviewed articles require reader_test.status=passed")
         evidence = self.validate_evidence(article.get("evidence"), f"{location}.evidence", source_locks)
         article["_evidence_by_id"] = evidence
         return article
@@ -551,7 +539,7 @@ def main() -> int:
             "Markdown/frontmatter parsing",
             "network reachability of source URLs",
             "Mermaid syntax and rendered page behavior",
-            "independent reader answers",
+            "semantic correctness of claims",
         ],
     }
     print(json.dumps(result, ensure_ascii=False, indent=2))

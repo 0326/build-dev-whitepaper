@@ -10,8 +10,6 @@ version: "目标版本"
 audience: []
 normative_level: "explanatory"
 verification: "draft"
-reader_test:
-  status: "unrun"
 evidence: []
 ---
 

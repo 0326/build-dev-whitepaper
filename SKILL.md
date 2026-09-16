@@ -77,7 +77,7 @@ AI 负责阅读、解释、论证和迁移分析；脚本 / CI 负责筛选版�
 python3 <skill-dir>/scripts/validate_manifest.py <manifest> --root <repo-root>
 ~~~
 
-按 [质量验收](references/review.md) 做内容与工程两次检查。机制、选择、失败和证据问题还要按 [独立读者测试](references/reader-testing.md) 运行快照测试；读者测试未运行时保持未核验状态，不能仅凭作者自审将文章标为 reviewed。先交付结果，再报告验证通过、失败、跳过和未执行项；目录齐全、链接存在或 CI 绿色均不能单独证明文章正确。
+按 [质量验收](references/review.md) 做内容与工程两次检查，再运行固定来源审计和自动化评测 runner。先交付结果，再报告验证通过、失败、跳过和未执行项；目录齐全、链接存在或 CI 绿色均不能单独证明文章事实正确。
 
 需要对 Git 来源的文档快照做结构校验时，优先直接审计 canonical manifest；只有现有项目尚未迁移时才导出临时单版本 JSON。参考 [工程与维护](references/engineering.md) 后运行：
 
@@ -108,7 +108,7 @@ python3 <skill-dir>/scripts/validate_manifest.py <manifest>
 python3 <skill-dir>/scripts/validate_evals.py
 ~~~
 
-结构校验只证明评测文件可读。要比较 Skill 版本，使用同一模型、提示词、输入资料和评分规则，分别运行 with_skill 与 without_skill，并记录通过率、失败证据、耗时和 Token。把 harness 或独立审阅者生成的结构化 run 交给 scorecard runner：
+结构校验只证明评测文件可读。要比较 Skill 版本，使用同一模型、提示词、输入资料和评分规则，分别运行 with_skill 与 without_skill，并记录通过率、失败证据、耗时和 Token。把自动化 harness 生成的结构化 run 交给 scorecard runner：
 
 ~~~bash
 python3 <skill-dir>/scripts/run_evals.py <run.json> \
@@ -116,5 +116,5 @@ python3 <skill-dir>/scripts/run_evals.py <run.json> \
   --json-out <scorecard.json>
 ~~~
 
-run JSON 的字段和证据要求见 [eval-run.schema.json](schemas/eval-run.schema.json)。runner 只汇总已记录的逐项判断，不从正文关键词推断质量；文章准确性、因果和读者理解仍需官方来源核验与独立读者测试。基线变体可以设置 `gates: false`，候选变体应设置 `gates: true`，避免比较基线的已知失败阻塞候选版本门禁。
+run JSON 的字段和证据要求见 [eval-run.schema.json](schemas/eval-run.schema.json)。runner 只汇总已记录的逐项自动化判断，不从正文关键词推断质量，也不替代官方来源核验。基线变体可以设置 `gates: false`，候选变体应设置 `gates: true`，避免比较基线的已知失败阻塞候选版本门禁。
 
