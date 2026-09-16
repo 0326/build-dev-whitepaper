@@ -5,7 +5,7 @@ type: "mechanism-explanation"
 version: "official atomic commit document"
 verification: "reviewed"
 authority: "upstream"
-source_lock:
+sources:
   - id: "sqlite-atomic-commit"
     url: "https://www.sqlite.org/atomiccommit.html"
     scope: "Sections 1–4 and 8–9"
