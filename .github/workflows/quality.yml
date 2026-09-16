@@ -23,6 +23,9 @@ jobs:
       - name: Compile scripts and tests
         run: python -m py_compile scripts/*.py tests/*.py
 
+      - name: Parse JSON schemas
+        run: for file in schemas/*.json; do python -m json.tool "$file" >/dev/null; done
+
       - name: Validate evaluation catalog
         run: python scripts/validate_evals.py
 
