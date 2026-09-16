@@ -29,6 +29,13 @@ $build-dev-whitepaper
 python3 scripts/validate_evals.py
 ~~~
 
+评测结果汇总：
+
+~~~bash
+python3 scripts/run_evals.py evals/fixtures/example-synthetic-run.json \
+  --cases evals/evals.json
+~~~
+
 Manifest 结构校验：
 
 ~~~bash
@@ -48,9 +55,12 @@ python3 scripts/validate_manifest.py manifests/example.whitepaper.json --root .
 - `examples/`：Raft 与 SQLite 的机制解释标杆样稿
 - `references/reader-testing.md`：无作者上下文的独立读者测试协议
 - `evals/evals.json`：第一轮最小评测集
+- `evals/fixtures/example-synthetic-run.json`：评测 run 数据格式示例（非质量结论）
 - `scripts/audit_snapshot.py`：只读的快照结构审计工具
 - `scripts/validate_evals.py`：评测文件结构校验工具
+- `scripts/run_evals.py`：逐项结果、证据和指标的 scorecard 汇总工具
 - `schemas/`：白皮书、文章和来源的 JSON Schema
+- `schemas/eval-run.schema.json`：评测 run JSON Schema
 - `manifests/`：canonical manifest 示例
 - `references/manifest.md`：Manifest 字段、迁移和扩展规则
 - `scripts/validate_manifest.py`：manifest 结构与交叉引用校验工具

@@ -108,5 +108,13 @@ python3 <skill-dir>/scripts/validate_manifest.py <manifest>
 python3 <skill-dir>/scripts/validate_evals.py
 ~~~
 
-结构校验只证明评测文件可读；要比较 Skill 版本，使用同一模型、提示词、输入资料和评分规则，分别运行 with_skill 与 without_skill，并记录通过率、失败证据、耗时和 Token。文章准确性、因果和读者理解仍需来源核验与独立读者测试。
+结构校验只证明评测文件可读。要比较 Skill 版本，使用同一模型、提示词、输入资料和评分规则，分别运行 with_skill 与 without_skill，并记录通过率、失败证据、耗时和 Token。把 harness 或独立审阅者生成的结构化 run 交给 scorecard runner：
+
+~~~bash
+python3 <skill-dir>/scripts/run_evals.py <run.json> \
+  --cases <skill-dir>/evals/evals.json \
+  --json-out <scorecard.json>
+~~~
+
+run JSON 的字段和证据要求见 [eval-run.schema.json](schemas/eval-run.schema.json)。runner 只汇总已记录的逐项判断，不从正文关键词推断质量；文章准确性、因果和读者理解仍需官方来源核验与独立读者测试。基线变体可以设置 `gates: false`，候选变体应设置 `gates: true`，避免比较基线的已知失败阻塞候选版本门禁。
 
