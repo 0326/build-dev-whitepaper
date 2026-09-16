@@ -1,0 +1,13 @@
+interface:
+  display_name: 开发者白皮书工坊
+  short_description: 以官方证据构建深入浅出的开发者白皮书，覆盖内容设计、版本快照与工程验证
+  default_prompt: 使用 $build-dev-whitepaper，为这个项目创建或升级开发者白皮书；先核验官方资料与读者目标，再设计分组、独立文章、附录和版本维护方案。
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
