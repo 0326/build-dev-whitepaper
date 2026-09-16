@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "project": "示例项目（替换为实际导出）",
+  "version": "v1.0.0",
+  "release_channel": "stable",
+  "publication_state": "draft",
+  "policy": {
+    "allowed_release_channels": ["stable"],
+    "required_appendices": ["glossary", "conventions", "source-index"]
+  },
+  "roots": {
+    "content": "./docs/v1.0.0",
+    "assets": "./public/whitepaper/v1.0.0"
+  },
+  "sources": [
+    {
+      "id": "core",
+      "repository": "https://example.org/official/project",
+      "ref": "v1.0.0",
+      "commit": "REPLACE_WITH_FULL_VERIFIED_COMMIT"
+    }
+  ],
+  "groups": [
+    {"id": "understand", "title": "理解与使用", "kind": "body", "articles": ["overview"]},
+    {"id": "appendices", "title": "附录", "kind": "appendix", "articles": ["glossary", "conventions", "source-index"]}
+  ],
+  "articles": [
+    {
+      "id": "overview", "slug": "overview", "title": "项目解决什么问题",
+      "file": "overview.md", "version": "v1.0.0", "verification": "draft", "authority": "upstream",
+      "sources": [{"source": "core", "path": "README.md"}], "diagrams": []
+    },
+    {
+      "id": "glossary", "slug": "glossary", "title": "术语表",
+      "file": "appendices/glossary.md", "version": "v1.0.0", "verification": "draft", "authority": "upstream",
+      "sources": [{"source": "core", "path": "README.md"}], "diagrams": []
+    },
+    {
+      "id": "conventions", "slug": "conventions", "title": "白皮书阅读约定",
+      "file": "appendices/conventions.md", "version": "v1.0.0", "verification": "draft", "authority": "document-policy",
+      "sources": [], "diagrams": []
+    },
+    {
+      "id": "source-index", "slug": "source-index", "title": "官方来源索引",
+      "file": "appendices/source-index.md", "version": "v1.0.0", "verification": "draft", "authority": "document-policy",
+      "sources": [], "diagrams": []
+    }
+  ]
+}
