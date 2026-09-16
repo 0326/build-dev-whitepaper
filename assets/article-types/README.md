@@ -28,13 +28,19 @@
 创建正文前，先填写：
 
 ~~~yaml
+schema_version: 1
+kind: article
 id: stable-topic-id
 type: mechanism-explanation
+audience: []
+normative_level: explanatory
 primary_question: "读者最需要回答的一个问题"
 reader_outcome: "读完后能作出的判断或完成的动作"
 prerequisites: []
 evidence: []
 boundaries: []
+slug: stable-topic-slug
+file: docs/path/article.md
 ~~~
 
 primary_question 只写一个问题。reader_outcome 必须能被读者测试验证，不能写成“了解系统”这类无法观察的结果。

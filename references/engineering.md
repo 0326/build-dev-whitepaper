@@ -2,6 +2,12 @@
 
 仅在涉及站点、版本更新或工程验收时使用。纯内容评审不要求搭建站点、添加依赖或引入本节全部设施。
 
+## Canonical manifest
+
+涉及版本、导航、附件或长期维护时，用一个 canonical manifest 统一记录项目策略、版本快照、来源锁、文章、分组、证据与论点。Manifest 的结构由 `schemas/whitepaper.schema.json`、`schemas/article.schema.json` 和 `schemas/source.schema.json` 描述；字段语义与迁移步骤见 [Manifest 与 Schema](manifest.md)。
+
+`group` 是项目可配置的导航层级，`type` 是文章承担的读者任务，`kind` 区分正文与附件。五组、RC 或稳定版都属于项目 profile，不写死在通用 schema 中。
+
 ## 先复用，再补缺
 
 查找当前内容格式、导航模型、路由、构建命令、图表工具、测试和部署约定。保持用户已选择的工具链；React、Vite、Markdown、MDX、静态生成或单文件发布都不是白皮书质量的前提。
@@ -10,7 +16,7 @@
 
 ## 受维护数据与生成结果
 
-选取现有 frontmatter、清单或内容集合中的一个作为事实源，从它生成：
+优先将 canonical manifest 作为项目级事实源；文章 frontmatter 只保留文章 intrinsic metadata，站点菜单、版本选择、来源索引和审计输入都从 manifest 投影：
 
 | 受维护信息 | 应保持一致的结果 |
 | --- | --- |
@@ -41,9 +47,15 @@ AI 做资料阅读、概念解释、取舍论证、文章去重、变化影响�
 
 ## 可选的离线结构审计
 
+涉及 canonical manifest 时先运行：
+
+```bash
+python3 scripts/validate_manifest.py manifests/example.whitepaper.json --root .
+```
+
 `scripts/audit_snapshot.py` 读取一个 JSON 文件，输出 JSON 检查结果。它只读、不联网、不安装依赖，适用于以 Git 文件为证据的快照。官方网页、PDF 或内部非 Git 资料沿用项目检查方式，不为适配工具编造 commit。退出码 `0` 表示所执行的结构检查无错误，`1` 表示发现错误，`2` 表示命令参数有误。
 
-**审计输入是现有数据的临时导出，不是另一个要长期维护的内容注册表。** 有现成且等价的项目校验工具时可以直接使用它，不必再导出。示例见 [审计输入](../assets/audit-input.example.json)，相对路径以输入文件位置为基准。
+**旧版审计输入仍是单版本兼容格式，不是另一个要长期维护的内容注册表。Canonical manifest 应直接作为维护入口；`audit_snapshot.py` 可通过 `--version` 和 `--root` 将其中一个版本适配到审计器。** 有现成且等价的项目校验工具时可以直接使用它，不必再导出。示例见 [审计输入](../assets/audit-input.example.json)，相对路径以输入文件位置为基准。
 
 | 字段 | 含义 |
 | --- | --- |
@@ -55,20 +67,20 @@ AI 做资料阅读、概念解释、取舍论证、文章去重、变化影响�
 | `policy.expected_body_groups` | 可选，仅在项目已约定分组数时填写 |
 | `policy.required_appendices` | 必备附录的文章 ID，可为空数组 |
 | `roots.content`, `roots.assets` | 本快照正文与图资产根目录；没有图时不要求资产目录存在 |
-| `sources` | 来源注册表；每项含唯一 `id`、`repository`、`ref`、完整 40 或 64 位 Git `commit` |
+| `sources` / `source_locks` | 顶层来源身份；版本内固定 Git `ref`、完整 40 或 64 位 `commit`，或网页访问时间 |
 | `groups` | 分组项含 `id`、`title`、`kind`（body / appendix）、有序 `articles` ID 数组 |
-| `articles` | 每篇含 `id`、`slug`、`title`、`file`、`version`、`verification`、`authority`、`sources`、`diagrams` |
+| `articles` | 每篇含 `id`、`slug`、`title`、`file`、`version`、`verification`、`authority`、`evidence`、`diagrams` |
 
 `articles[*].verification` 为 draft 或 reviewed，表示编辑核验状态，不表示产品能力稳定性。已发布的导出要求全部 reviewed；**工具读取这个声明，不替作者完成核验**。项目自有的 blocked 等未核验状态只能映射到 draft；保留原始阻塞记录，不能借格式转换提升核验状态。
 
 `authority` 为 `upstream` 或 `document-policy`。解释项目能力、引用 upstream-contract 的文章用 upstream 并至少给出一条来源；白皮书阅读约定等编辑政策可用 document-policy。混合文章只要包含项目能力主张，就按 upstream 导出。
 
-文章 `sources` 中每项为 `{"source":"core","path":"docs/architecture.md"}`；`diagrams` 是相对资产根目录的文件路径数组。图源码与产物是否一致仍由项目工具检查。
+文章 `evidence` 中每项至少含稳定 `id` 和 `source_id`，并提供 `path`、`locator`、`symbol` 或 URL；旧版 `sources` 记录仅为兼容输入。`diagrams` 是相对资产根目录的文件路径数组。图源码与产物是否一致仍由项目工具检查。
 
 运行：
 
 ```bash
-python3 <skill-dir>/scripts/audit_snapshot.py /path/to/audit.json
+python3 <skill-dir>/scripts/audit_snapshot.py /path/to/manifest.json --root /path/to/repo
 python3 <skill-dir>/scripts/audit_snapshot.py /path/to/audit.json \
   --upstream core=/path/to/official-checkout
 ```

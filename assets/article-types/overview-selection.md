@@ -1,10 +1,18 @@
 ---
+schema_version: 1
 title: "项目概览与选型"
+kind: "article"
 id: "overview-selection"
+slug: "stable-article-slug"
+file: "docs/path/article.md"
 type: "overview-selection"
 version: "项目的具体版本"
+audience: []
+normative_level: "explanatory"
 verification: "draft"
-sources: []
+reader_test:
+  status: "unrun"
+evidence: []
 ---
 
 # 项目概览与选型
@@ -51,3 +59,4 @@ sources: []
 ## 证据、限制与继续阅读
 
 列出固定版本的官方来源、仍待核实的结论和下一篇文章。不要用本页代替机制、Reference 或教程文章。
+

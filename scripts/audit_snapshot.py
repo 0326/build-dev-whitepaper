@@ -95,6 +95,105 @@ class Audit:
         return result.stdout.strip()
 
 
+
+def manifest_version_to_snapshot(data, version_id=None):
+    """Adapt the canonical manifest to the legacy single-version audit shape."""
+    if not isinstance(data, dict) or "versions" not in data:
+        return data, None
+    project = data.get("project") if isinstance(data.get("project"), dict) else {}
+    policy = data.get("policy") if isinstance(data.get("policy"), dict) else {}
+    versions = data.get("versions")
+    if not isinstance(versions, list):
+        raise ValueError("manifest.versions must be an array")
+    selected = None
+    if version_id is None:
+        default_version = policy.get("default_version")
+        for candidate in versions:
+            if isinstance(candidate, dict) and candidate.get("id") == default_version:
+                selected = candidate
+                break
+        if selected is None and len(versions) == 1:
+            selected = versions[0]
+    else:
+        for candidate in versions:
+            if isinstance(candidate, dict) and candidate.get("id") == version_id:
+                selected = candidate
+                break
+    if not isinstance(selected, dict):
+        requested = version_id or policy.get("default_version") or "<default>"
+        raise ValueError(f"manifest version not found: {requested}")
+
+    source_defs = {
+        source.get("id"): source
+        for source in data.get("sources", [])
+        if isinstance(source, dict) and isinstance(source.get("id"), str)
+    }
+    locked_sources = []
+    for lock in selected.get("source_locks", []):
+        if not isinstance(lock, dict):
+            continue
+        source_id = lock.get("source_id")
+        source = source_defs.get(source_id)
+        if not isinstance(source, dict):
+            continue
+        merged = dict(source)
+        merged["id"] = source_id
+        if lock.get("ref") is not None:
+            merged["ref"] = lock.get("ref")
+        if lock.get("commit") is not None:
+            merged["commit"] = lock.get("commit")
+        if lock.get("accessed") is not None:
+            merged["accessed"] = lock.get("accessed")
+        if merged.get("kind") == "web" and "repository" not in merged:
+            merged["repository"] = merged.get("url")
+        locked_sources.append(merged)
+
+    articles = []
+    for raw_article in selected.get("articles", []):
+        if not isinstance(raw_article, dict):
+            articles.append(raw_article)
+            continue
+        article = dict(raw_article)
+        article.setdefault(
+            "authority",
+            "document-policy" if article.get("kind") == "appendix" else "upstream",
+        )
+        if "evidence" in article:
+            references = []
+            for raw_reference in article.get("evidence") or []:
+                if not isinstance(raw_reference, dict):
+                    references.append(raw_reference)
+                    continue
+                reference = dict(raw_reference)
+                if "source_id" in reference:
+                    reference["source"] = reference["source_id"]
+                references.append(reference)
+            article["sources"] = references
+            del article["evidence"]
+        articles.append(article)
+
+    snapshot = {
+        "schema_version": 1,
+        "project": project.get("id") or project.get("name"),
+        "version": selected.get("id"),
+        "release_channel": selected.get("release_channel"),
+        "publication_state": selected.get("publication_state"),
+        "policy": {
+            "allowed_release_channels": policy.get("allowed_release_channels", []),
+            "required_appendices": policy.get("required_appendices", []),
+            "expected_body_groups": policy.get("expected_body_groups"),
+        },
+        "roots": {
+            "content": selected.get("content_root"),
+            "assets": selected.get("asset_root") or selected.get("content_root"),
+        },
+        "sources": locked_sources,
+        "groups": selected.get("groups", []),
+        "articles": articles,
+    }
+    return snapshot, selected.get("id")
+
+
 def audit_snapshot(data, base, upstreams):
     audit = Audit()
     data = audit.obj(data, "snapshot")
@@ -137,31 +236,50 @@ def audit_snapshot(data, base, upstreams):
             audit.error(loc + ".id", "Duplicate source ID.")
             continue
         sources[source_id] = source
-        repository = audit.string(source.get("repository"), loc + ".repository")
-        try:
-            url = urlsplit(repository)
-            valid_url = url.scheme in ("https", "http") and url.hostname and not url.username and not url.password
-        except ValueError:
-            valid_url = False
-        if not valid_url:
-            audit.error(loc + ".repository", "Expected a canonical HTTP(S) repository URL without credentials.")
-        ref = audit.string(source.get("ref"), loc + ".ref")
-        commit = audit.string(source.get("commit"), loc + ".commit")
-        if not re.fullmatch(r"(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})", commit):
-            audit.error(loc + ".commit", "Expected a complete verified Git commit hash.")
+        source_kind = source.get("kind", "git")
+        if source_kind not in ("git", "web", "file"):
+            audit.error(loc + ".kind", "Expected git, web, or file.")
             continue
-        if source_id not in upstreams:
-            audit.skipped.append({"source": source_id, "check": "commit, ref binding and evidence paths; no local checkout supplied"})
-            continue
-        repo = upstreams[source_id]
-        actual = audit.git(repo, ["rev-parse", "--verify", "--end-of-options", commit + "^{commit}"], loc + ".commit")
-        if actual is not None and actual.lower() != commit.lower():
-            audit.error(loc + ".commit", "Resolved commit differs from the declared commit.")
-        bound = audit.git(repo, ["rev-parse", "--verify", "--end-of-options", ref + "^{commit}"], loc + ".ref") if ref else None
-        if bound is not None and bound.lower() != commit.lower():
-            audit.error(loc + ".ref", "Ref resolves to a different commit.")
-        if actual and bound and actual.lower() == bound.lower() == commit.lower():
-            audit.checked.append(f"Pinned commit and ref binding: {source_id}")
+        if source_kind == "git":
+            repository = audit.string(source.get("repository"), loc + ".repository")
+            try:
+                url = urlsplit(repository)
+                valid_url = url.scheme in ("https", "http") and url.hostname and not url.username and not url.password
+            except ValueError:
+                valid_url = False
+            if not valid_url:
+                audit.error(loc + ".repository", "Expected a canonical HTTP(S) repository URL without credentials.")
+            ref = audit.string(source.get("ref"), loc + ".ref")
+            commit = audit.string(source.get("commit"), loc + ".commit")
+            if not re.fullmatch(r"(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})", commit):
+                audit.error(loc + ".commit", "Expected a complete verified Git commit hash.")
+                continue
+            if source_id not in upstreams:
+                audit.skipped.append({"source": source_id, "check": "commit, ref binding and evidence paths; no local checkout supplied"})
+                continue
+            repo = upstreams[source_id]
+            actual = audit.git(repo, ["rev-parse", "--verify", "--end-of-options", commit + "^{commit}"], loc + ".commit")
+            if actual is not None and actual.lower() != commit.lower():
+                audit.error(loc + ".commit", "Resolved commit differs from the declared commit.")
+            bound = audit.git(repo, ["rev-parse", "--verify", "--end-of-options", ref + "^{commit}"], loc + ".ref") if ref else None
+            if bound is not None and bound.lower() != commit.lower():
+                audit.error(loc + ".ref", "Ref resolves to a different commit.")
+            if actual and bound and actual.lower() == bound.lower() == commit.lower():
+                audit.checked.append(f"Pinned commit and ref binding: {source_id}")
+        elif source_kind == "web":
+            url_value = audit.string(source.get("url"), loc + ".url")
+            try:
+                url = urlsplit(url_value)
+                valid_url = url.scheme in ("https", "http") and url.hostname and not url.username and not url.password
+            except ValueError:
+                valid_url = False
+            if not valid_url:
+                audit.error(loc + ".url", "Expected a canonical HTTP(S) URL without credentials.")
+            audit.string(source.get("accessed"), loc + ".accessed")
+            audit.skipped.append({"source": source_id, "check": "web source content and version binding; local Git checkout is not applicable"})
+        else:
+            audit.relative(source.get("path"), loc + ".path")
+            audit.skipped.append({"source": source_id, "check": "file source content and version binding; local Git checkout is not applicable"})
     for source_id in upstreams:
         if source_id not in sources:
             audit.error("--upstream", f"Unknown source ID: {source_id}")
@@ -192,19 +310,31 @@ def audit_snapshot(data, base, upstreams):
             files.append(file_path)
         for j, diagram in enumerate(audit.array(article.get("diagrams"), loc + ".diagrams")):
             audit.file(resolved_roots["assets"], diagram, f"{loc}.diagrams[{j}]")
-        evidence = audit.array(article.get("sources"), loc + ".sources")
+        evidence_key = "evidence" if "evidence" in article else "sources"
+        evidence = audit.array(article.get(evidence_key), loc + "." + evidence_key)
         if article.get("authority") == "upstream" and not evidence:
-            audit.error(loc + ".sources", "Upstream claims require at least one declared evidence path.")
+            audit.error(loc + "." + evidence_key, "Upstream claims require at least one declared evidence path.")
         for j, raw_reference in enumerate(evidence):
-            ref_loc = f"{loc}.sources[{j}]"
+            ref_loc = f"{loc}.{evidence_key}[{j}]"
             reference = audit.obj(raw_reference, ref_loc)
-            source_id = audit.string(reference.get("source"), ref_loc + ".source")
-            relative = audit.relative(reference.get("path"), ref_loc + ".path")
+            source_id = audit.string(reference.get("source_id", reference.get("source")), ref_loc + ".source_id")
+            path_value = reference.get("path")
+            relative = audit.relative(path_value, ref_loc + ".path") if path_value is not None else None
             if source_id not in sources:
-                audit.error(ref_loc + ".source", "Unknown evidence source.")
+                audit.error(ref_loc + ".source_id", "Unknown evidence source.")
+                continue
+            source_kind = sources[source_id].get("kind", "git")
+            if source_kind == "git" and relative is None:
+                audit.error(ref_loc + ".path", "Git evidence requires a repository path.")
+                continue
+            if source_kind != "git" and relative is None:
+                locator = any(reference.get(field) for field in ("locator", "symbol", "url"))
+                if not locator:
+                    audit.error(ref_loc, "Non-Git evidence requires locator, symbol, or URL.")
                 continue
             commit = sources[source_id].get("commit", "")
-            if (source_id not in upstreams or relative is None or not isinstance(commit, str)
+            if (source_kind != "git" or source_id not in upstreams or relative is None
+                    or not isinstance(commit, str)
                     or not re.fullmatch(r"(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})", commit)):
                 continue
             key = (source_id, str(relative))
@@ -255,7 +385,11 @@ def audit_snapshot(data, base, upstreams):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("input", type=Path, help="Temporary audit JSON exported from actual content metadata")
+    parser.add_argument("input", type=Path, help="Canonical manifest or temporary single-version audit JSON")
+    parser.add_argument("--version", default=None,
+                        help="Version ID to audit when input is a canonical manifest")
+    parser.add_argument("--root", type=Path, default=None,
+                        help="Repository root for paths in a canonical manifest; defaults to the input directory")
     parser.add_argument("--upstream", action="append", default=[], metavar="SOURCE_ID=CHECKOUT",
                         help="Enable fixed-commit evidence checks using a local Git checkout")
     args = parser.parse_args()
@@ -267,7 +401,9 @@ def main():
         upstreams[source_id] = Path(path).expanduser()
     try:
         data = json.loads(args.input.read_text(encoding="utf-8"))
-        audit = audit_snapshot(data, args.input.resolve().parent, upstreams)
+        data, selected_version = manifest_version_to_snapshot(data, args.version)
+        base = args.root.resolve() if args.root is not None else args.input.resolve().parent
+        audit = audit_snapshot(data, base, upstreams)
     except (OSError, UnicodeError, ValueError, RuntimeError) as exc:
         audit = Audit()
         audit.error("input", f"Cannot load or resolve audit input: {type(exc).__name__}")
@@ -286,3 +422,4 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

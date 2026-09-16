@@ -1,10 +1,18 @@
 ---
+schema_version: 1
 title: "版本迁移"
+kind: "article"
 id: "migration"
+slug: "stable-article-slug"
+file: "docs/path/article.md"
 type: "migration"
 version: "目标版本"
+audience: []
+normative_level: "explanatory"
 verification: "draft"
-sources: []
+reader_test:
+  status: "unrun"
+evidence: []
 ---
 
 # 版本迁移
@@ -46,3 +54,4 @@ sources: []
 ## 来源与修订记录
 
 链接两端固定版本的官方 diff、发布记录和受影响文章，记录本迁移说明的修订原因。
+

@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/0326/build-dev-whitepaper/main/schemas/article.schema.json",
+  "title": "Developer whitepaper article metadata",
+  "description": "Canonical metadata for one independent article or appendix.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "title",
+    "version",
+    "kind",
+    "type",
+    "normative_level",
+    "verification",
+    "slug",
+    "file",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "id": { "$ref": "#/$defs/id" },
+    "title": { "$ref": "#/$defs/nonEmpty" },
+    "version": { "$ref": "#/$defs/nonEmpty" },
+    "kind": { "enum": ["article", "appendix"] },
+    "type": { "$ref": "#/$defs/nonEmpty" },
+    "audience": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/nonEmpty" },
+      "uniqueItems": true
+    },
+    "normative_level": {
+      "enum": ["normative", "explanatory", "practical", "editorial", "unknown"]
+    },
+    "verification": { "enum": ["draft", "reviewed", "blocked"] },
+    "authority": { "enum": ["upstream", "document-policy"] },
+    "reader_test": { "$ref": "#/$defs/readerTest" },
+    "slug": { "$ref": "#/$defs/relativePath" },
+    "file": { "$ref": "#/$defs/relativePath" },
+    "diagrams": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/relativePath" },
+      "uniqueItems": true
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/id" },
+      "uniqueItems": true
+    },
+    "next_articles": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/id" },
+      "uniqueItems": true
+    },
+    "boundaries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/nonEmpty" },
+      "uniqueItems": true
+    },
+    "claim_ids": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/id" },
+      "uniqueItems": true
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidence" },
+      "uniqueItems": true
+    },
+    "notes": { "type": "string" }
+  },
+  "patternProperties": {
+    "^x-": {}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "maxLength": 120
+    },
+    "nonEmpty": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "relativePath": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)(?![A-Za-z]:)[^\\u0000]+$"
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "source_id": { "$ref": "#/$defs/id" },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https?://[^\\s]+$"
+        },
+        "path": { "$ref": "#/$defs/relativePath" },
+        "locator": { "$ref": "#/$defs/nonEmpty" },
+        "symbol": { "$ref": "#/$defs/nonEmpty" },
+        "scope": { "type": "string" },
+        "accessed": { "type": "string", "minLength": 10 },
+        "claim_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        },
+        "notes": { "type": "string" }
+      },
+      "anyOf": [
+        { "required": ["source_id"] },
+        { "required": ["url"] }
+      ],
+      "anyOf": [
+        { "required": ["path"] },
+        { "required": ["locator"] },
+        { "required": ["symbol"] },
+        { "required": ["url"] }
+      ],
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "readerTest": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["unrun", "passed", "failed", "not-applicable"] },
+        "tested_at": { "type": "string", "minLength": 10 },
+        "snapshot": { "$ref": "#/$defs/relativePath" },
+        "result_file": { "$ref": "#/$defs/relativePath" },
+        "notes": { "type": "string" }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    }
+  }
+}
