@@ -5,7 +5,7 @@ type: "mechanism-explanation"
 version: "Raft paper, 2014"
 verification: "reviewed"
 authority: "upstream"
-source_lock:
+sources:
   - id: "raft-paper"
     url: "https://raft.github.io/raft.pdf"
     scope: "Abstract; Sections 3 and 5; Section 9.1"
