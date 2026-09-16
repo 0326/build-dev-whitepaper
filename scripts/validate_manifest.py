@@ -28,7 +28,7 @@ def nonempty(value: Any) -> bool:
 
 
 def valid_id(value: Any) -> bool:
-    return isinstance(value, str) and bool(ID_RE.fullmatch(value))
+    return isinstance(value, str) and len(value) <= 120 and bool(ID_RE.fullmatch(value))
 
 
 def valid_url(value: Any) -> bool:
@@ -170,15 +170,15 @@ class Validator:
                 self.error(f"{location}.repository", "must be an HTTP(S) URL without credentials")
             if "url" in source and not valid_url(source.get("url")):
                 self.error(f"{location}.url", "must be an HTTP(S) URL without credentials")
-            if "accessed" in source and not nonempty(source.get("accessed")):
-                self.error(f"{location}.accessed", "must be a non-empty date or timestamp")
+            if "accessed" in source and (not isinstance(source.get("accessed"), str) or len(source.get("accessed", "")) < 10):
+                self.error(f"{location}.accessed", "must be a date or timestamp string of at least 10 characters")
             if kind == "git" and not valid_url(source.get("repository")):
                 self.error(f"{location}.repository", "git sources require repository")
             if kind == "web":
                 if not valid_url(source.get("url")):
                     self.error(f"{location}.url", "web sources require url")
-                if not nonempty(source.get("accessed")):
-                    self.error(f"{location}.accessed", "web sources require accessed")
+                if not isinstance(source.get("accessed"), str) or len(source.get("accessed", "")) < 10:
+                    self.error(f"{location}.accessed", "web sources require accessed (at least 10 characters)")
             if kind == "file":
                 self.check_path(source.get("path"), f"{location}.path")
         self.checks.append("source registry IDs, kinds and URL/path shapes")
@@ -233,8 +233,8 @@ class Validator:
         if source_id not in sources:
             self.error(f"{location}.source_id", f"unknown source: {source_id}")
             return source_id
-        if not nonempty(lock.get("accessed")):
-            self.error(f"{location}.accessed", "must be a non-empty date or timestamp")
+        if not isinstance(lock.get("accessed"), str) or len(lock.get("accessed", "")) < 10:
+            self.error(f"{location}.accessed", "must be a date or timestamp string of at least 10 characters")
         source_kind = sources[source_id].get("kind")
         if source_kind == "git":
             self.check_text(lock.get("ref"), f"{location}.ref")
@@ -291,6 +291,8 @@ class Validator:
         source_locks: dict[str, dict[str, Any]],
     ) -> dict[str, Any]:
         article = self.require_object(raw, location)
+        if article.get("schema_version") != 1:
+            self.error(f"{location}.schema_version", "expected article schema version 1")
         article_id = self.check_id(article.get("id"), f"{location}.id")
         self.check_text(article.get("title"), f"{location}.title")
         if article.get("version") != version_id:
@@ -302,6 +304,8 @@ class Validator:
             self.error(f"{location}.normative_level", "must be normative, explanatory, practical, editorial, or unknown")
         if article.get("verification") not in VERIFICATION_STATES:
             self.error(f"{location}.verification", "must be draft, reviewed, or blocked")
+        if article.get("authority") is not None and article.get("authority") not in {"upstream", "document-policy"}:
+            self.error(f"{location}.authority", "must be upstream or document-policy when specified")
         self.check_path(article.get("slug"), f"{location}.slug")
         self.check_file(article.get("file"), f"{location}.file", self._content_root)
         diagrams = self.require_list(article.get("diagrams", []), f"{location}.diagrams")
@@ -327,7 +331,7 @@ class Validator:
         if article.get("verification") == "reviewed":
             if not isinstance(reader_test, dict) or reader_test.get("status") != "passed":
                 self.error(f"{location}.verification", "reviewed articles require reader_test.status=passed")
-        evidence = self.validate_evidence(article.get("evidence", []), f"{location}.evidence", source_locks)
+        evidence = self.validate_evidence(article.get("evidence"), f"{location}.evidence", source_locks)
         article["_evidence_by_id"] = evidence
         return article
 
@@ -354,7 +358,7 @@ class Validator:
             self.check_text(claim.get("text"), f"{item_location}.text")
             if claim.get("status") not in CLAIM_STATES:
                 self.error(f"{item_location}.status", "must be proposed, verified, or blocked")
-            evidence_ids = self.require_list(claim.get("evidence_ids", []), f"{item_location}.evidence_ids")
+            evidence_ids = self.require_list(claim.get("evidence_ids"), f"{item_location}.evidence_ids")
             if claim.get("kind") in {"fact", "inference"} and claim.get("status") == "verified" and not evidence_ids:
                 self.error(f"{item_location}.evidence_ids", "verified facts and inferences require evidence")
             if not unique(evidence_ids):
@@ -556,3 +560,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
