@@ -37,6 +37,13 @@ def stable_id(value: Any) -> bool:
     return isinstance(value, str) and len(value) <= 120 and bool(ID_RE.fullmatch(value))
 
 
+def safe_relative(value: Any) -> bool:
+    if not isinstance(value, str) or not value.strip() or "\x00" in value:
+        return False
+    path = Path(value)
+    return not (path.is_absolute() or ".." in path.parts or "\\" in value or ":" in value)
+
+
 def case_key(value: Any) -> str:
     if type(value) is int and value > 0:
         return str(value)
@@ -148,6 +155,8 @@ def validate_evidence(raw: Any, location: str, errors: list[str]) -> list[dict[s
             errors.append(f"{item_location}.kind: must be one of {', '.join(sorted(EVIDENCE_KINDS))}")
         if not nonempty(locator):
             errors.append(f"{item_location}.locator: must be a non-empty locator")
+        if "excerpt" in item and not isinstance(item.get("excerpt"), str):
+            errors.append(f"{item_location}.excerpt: must be a string when specified")
         if kind in EVIDENCE_KINDS and nonempty(locator):
             record = {"kind": kind, "locator": locator}
             if nonempty(item.get("excerpt")):
@@ -196,6 +205,10 @@ def summarize_case(
         compact = normalize_metrics(compact_metrics, f"{location}.metrics", metrics_errors)
         metrics.update(compact)
     errors.extend(metrics_errors)
+    if "output_artifact" in raw_result and not safe_relative(raw_result.get("output_artifact")):
+        errors.append(f"{location}.output_artifact: must be a safe relative path")
+    if "error" in raw_result and raw_result.get("error") is not None and not isinstance(raw_result.get("error"), str):
+        errors.append(f"{location}.error: must be a string when specified")
 
     raw_expectations = raw_result.get("expectation_results")
     if raw_expectations is None:
@@ -382,7 +395,11 @@ def summarize_variant(
     expected_expectations = sum(case["expected_expectations"] for case in case_summaries)
     passed_expectations = sum(case["passed_expectations"] for case in case_summaries)
     evidence_covered = sum(case["evidence_covered"] for case in case_summaries)
-    gates = raw_variant.get("gates", name in {"with_skill", "candidate"})
+    if not nonempty(raw_variant.get("label")):
+        errors.append(f"variants.{name}.label: must be a non-empty label")
+    if "skill_revision" in raw_variant and not nonempty(raw_variant.get("skill_revision")):
+        errors.append(f"variants.{name}.skill_revision: must be a non-empty string when specified")
+    gates = raw_variant.get("gates")
     if type(gates) is not bool:
         errors.append(f"variants.{name}.gates: must be a boolean")
         gates = False
@@ -456,6 +473,10 @@ def run(catalog_path: Path, run_path: Path, *, allow_partial: bool = False, only
     run_id = run_data.get("run_id")
     if not stable_id(run_id):
         errors.append("run.run_id: expected a lowercase stable ID")
+    if "created_at" in run_data and (not isinstance(run_data.get("created_at"), str) or len(run_data.get("created_at", "")) < 10):
+        errors.append("run.created_at: must be a timestamp string of at least 10 characters")
+    if "model" in run_data and not nonempty(run_data.get("model")):
+        errors.append("run.model: must be a non-empty string when specified")
     variants = run_data.get("variants")
     if not isinstance(variants, dict) or not variants:
         errors.append("run.variants: expected a non-empty object")
@@ -469,7 +490,9 @@ def run(catalog_path: Path, run_path: Path, *, allow_partial: bool = False, only
         if not isinstance(catalog_meta, dict):
             errors.append("run.catalog: expected an object")
         else:
-            if nonempty(catalog_meta.get("path")):
+            if not safe_relative(catalog_meta.get("path")):
+                errors.append("run.catalog.path: must be a safe relative path")
+            else:
                 catalog_info["declared_path"] = catalog_meta["path"]
             declared_sha = catalog_meta.get("sha256")
             if not isinstance(declared_sha, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", declared_sha):
