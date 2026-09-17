@@ -53,7 +53,7 @@ function frontMatterId(filePath) {
   }
 
   for (const line of match[1].split(/\r?\n/)) {
-    const idMatch = /^\s*id:\s*(.+?)\s*$/.exec(line);
+    const idMatch = /^id:\s*(.+?)\s*$/.exec(line);
     if (idMatch) {
       return stripQuotes(idMatch[1]);
     }
@@ -131,7 +131,12 @@ for (const article of articles) {
 
   const explicitId = frontMatterId(absoluteFile);
   const defaultId = relativeFile.replace(/\.(md|mdx)$/i, '');
-  const docId = explicitId || defaultId;
+  const directoryId = path.posix.dirname(defaultId);
+  const docId = explicitId
+    ? directoryId === '.'
+      ? explicitId
+      : `${directoryId}/${explicitId}`
+    : defaultId;
   if (!docId) fail(`cannot derive Docusaurus doc id for article ${article.id}`);
   if (seenDocIds.has(docId)) fail(`duplicate Docusaurus doc id: ${docId}`);
 
