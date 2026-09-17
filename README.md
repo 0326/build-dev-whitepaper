@@ -10,7 +10,8 @@
 - 按读者问题和概念依赖设计分组与独立文章；
 - 用术语表、规范约定、来源索引和迁移表补足查阅需求；
 - 把版本基线、内容核验和发布状态分开管理；
-- 由 AI 负责理解、解释和论证，由脚本 / CI 负责可重复的结构与工程校验。
+- 由 AI 负责理解、解释和论证，由脚本 / CI 负责可重复的结构与工程校验；
+- 可选使用 Docusaurus 把 manifest + Markdown 投影为静态文档站，并选择 GitHub Pages、Vercel 或 Netlify 发布。
 
 ## 使用方式
 
@@ -21,7 +22,14 @@ $build-dev-whitepaper
 请为这个项目创建或升级开发者白皮书，先核验官方资料，再设计文章分组、独立文章、术语表、规范附件和版本维护方案。
 ```
 
-核心说明见 [SKILL.md](SKILL.md)。第一轮质量基线包括文章分型、标杆样稿、自动化评测和最小评测集；从 [evals/README.md](evals/README.md) 开始运行。
+需要在线文档站时可以明确选择 Docusaurus：
+
+```text
+$build-dev-whitepaper
+保留现有 Markdown 和 canonical manifest，增加可选 Docusaurus 静态站点，并配置 GitHub Pages 部署；先保证本地构建可独立通过。
+```
+
+核心说明见 [SKILL.md](SKILL.md)。Docusaurus 的集成边界、manifest 投影和三种部署方式见 [references/docusaurus.md](references/docusaurus.md)。第一轮质量基线包括文章分型、标杆样稿、自动化评测和最小评测集；从 [evals/README.md](evals/README.md) 开始运行。
 
 结构校验：
 
@@ -47,11 +55,13 @@ python3 scripts/validate_manifest.py manifests/example.whitepaper.json --root .
 - `references/authoring.md`：读者路径、独立文章和写作深度
 - `references/evidence-and-versions.md`：证据、来源锁和版本快照
 - `references/engineering.md`：元数据投影、工程维护和离线审计
+- `references/docusaurus.md`：Docusaurus 可选渲染层、manifest 投影与 GitHub Pages / Vercel / Netlify 部署
 - `references/review.md`：内容与工程验收标准
 - `references/dsh-example.md`：从 DSH 改版案例提炼的可迁移经验
 - `assets/project-brief.md`：项目简报模板
 - `assets/article.md`：通用独立文章模板
 - `assets/article-types/`：五种文章类型模板与选择规则
+- `assets/docusaurus/`：Docusaurus 配置、manifest 投影脚本和部署模板
 - `examples/`：Raft 与 SQLite 的机制解释标杆样稿
 - `evals/evals.json`：第一轮最小评测集
 - `evals/fixtures/example-synthetic-run.json`：评测 run 数据格式示例（非质量结论）
@@ -66,7 +76,7 @@ python3 scripts/validate_manifest.py manifests/example.whitepaper.json --root .
 
 ## 设计边界
 
-DSH 的五组正文、RC + 稳定版策略、具体站点框架和路由只是项目设置，不是本方法的默认要求。小型库可以使用平铺 Markdown；协议、数据库或平台项目可以按自己的概念依赖组织目录。
+DSH 的五组正文、RC + 稳定版策略、具体站点框架和路由只是项目设置，不是本方法的默认要求。小型库可以使用平铺 Markdown；协议、数据库或平台项目可以按自己的概念依赖组织目录。Docusaurus 同样是可选发布层，不是所有白皮书都必须引入的默认依赖。
 
 本工具包不把开源对标项目当成目标项目事实来源，也不因目录齐全、构建成功或文件存在就自动宣称文章已核验。Manifest 是项目级元数据的唯一事实源，但校验通过仍不等于主张已被官方证据支持。examples/ 中的样稿只用于展示写作方法，事实范围以各自的官方来源声明为准。
 
