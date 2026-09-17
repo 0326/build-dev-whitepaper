@@ -63,6 +63,8 @@ description: "为软件、框架、协议和开发平台创建、评审、改版
 
 站点实现或版本维护任务再读 [工程与维护](references/engineering.md)。从同一份受维护元数据生成导航、前后篇、来源链接、搜索 / sitemap 等投影，避免第二份手工注册表。
 
+用户明确选择 Docusaurus，或需要把 canonical manifest + Markdown 快速构建为静态文档站时，再读 [Docusaurus 可选集成](references/docusaurus.md)。Docusaurus 只作为渲染与发布投影：Sidebar、文档范围和构建配置从 manifest 派生，不把 `sidebars`、`versioned_docs` 或部署平台配置升级为新的内容事实源。先保证本地 `npm run build` 独立通过；只有任务明确包含发布时，才接入 GitHub Pages、Vercel 或 Netlify。可复用模板见 [assets/docusaurus/](assets/docusaurus/)。
+
 需要长期维护时，先运行 `python3 <skill-dir>/scripts/validate_manifest.py <manifest> --root <repo-root>`，再运行固定来源审计；不要让站点注册表、文章 frontmatter 和临时审计 JSON 各自演化成不同 schema。
 
 AI 负责阅读、解释、论证和迁移分析；脚本 / CI 负责筛选版本、收集差异、构建、链接与资产校验。已有自动化优先复用。检测到上游新版不代表新版白皮书已经发布。
@@ -78,6 +80,8 @@ python3 <skill-dir>/scripts/validate_manifest.py <manifest> --root <repo-root>
 ~~~
 
 按 [质量验收](references/review.md) 做内容与工程两次检查，再运行固定来源审计和自动化评测 runner。先交付结果，再报告验证通过、失败、跳过和未执行项；目录齐全、链接存在或 CI 绿色均不能单独证明文章事实正确。
+
+若启用了 Docusaurus 集成，额外运行 manifest 投影与 `npm run build`，确认生成的文档集合、Sidebar、深链接和静态资产与目标版本一致。部署未授权或未实际执行时明确写成“未部署”，不能用构建成功代替线上发布验证。
 
 需要对 Git 来源的文档快照做结构校验时，优先直接审计 canonical manifest；只有现有项目尚未迁移时才导出临时单版本 JSON。参考 [工程与维护](references/engineering.md) 后运行：
 
