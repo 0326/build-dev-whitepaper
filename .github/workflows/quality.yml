@@ -20,6 +20,11 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Compile scripts and tests
         run: python -m py_compile scripts/*.py tests/*.py
 
@@ -34,6 +39,20 @@ jobs:
 
       - name: Audit canonical snapshot
         run: python scripts/audit_snapshot.py manifests/example.whitepaper.json --root . --version v1.0.0
+
+      - name: Validate Docusaurus integration assets
+        run: |
+          node --check assets/docusaurus/scripts/project-manifest.mjs
+          node --check assets/docusaurus/docusaurus.config.js
+          node --check assets/docusaurus/sidebars.js
+          python -m json.tool assets/docusaurus/vercel.json >/dev/null
+          mkdir -p .tmp/docusaurus
+          node assets/docusaurus/scripts/project-manifest.mjs \
+            --manifest manifests/example.whitepaper.json \
+            --root . \
+            --site-dir .tmp/docusaurus \
+            --out .tmp/docusaurus/whitepaper.generated.json
+          python -m json.tool .tmp/docusaurus/whitepaper.generated.json >/dev/null
 
       - name: Run evaluation scorecard
         run: python scripts/run_evals.py evals/fixtures/example-synthetic-run.json --cases evals/evals.json
